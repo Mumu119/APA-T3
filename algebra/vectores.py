@@ -1,8 +1,10 @@
 """
     Tercera tarea de APA - manejo de vectores
 
-    Nombre y apellidos:
+    Nombre y apellidos: Gerard Soteras Garriga i Ferran Murcia Rull 
 """
+
+import numpy as np
 
 class Vector:
     """
@@ -85,3 +87,77 @@ class Vector:
 
         return -self + other
 
+    def __mul__(self, otro):
+        """
+        Multiplicar el vector per un altre o si és un numero fer la multiplicació escalar.
+        
+        >>> v1 = Vector([1, 2, 3])
+        >>> v2 = Vector([4, 5, 6]) 
+        >>> v1 * v2
+        Vector([4, 10, 18])
+        
+        >>> v1 = Vector([1, 2, 3])
+        >>> v1 * 2
+        Vector([2, 4, 6])
+        """
+
+        if isinstance(otro, (int, float, complex)):
+            return Vector(vector * otro for vector in self)
+        else:
+            return Vector(uno * otro for uno, otro in zip(self, otro))
+
+    __rmul__ = __mul__      #propiedad conmutativa de la multiplicación
+    
+    def __matmul__(self, otro):
+        """
+        Producto escalar de dos vectores.
+        
+        >>> v1 = Vector([1, 2, 3])
+        >>> v2 = Vector([4, 5, 6])
+        >>> v1 @ v2
+        32
+        """
+        
+        return sum(uno * otro for uno, otro in zip(self, otro))
+    
+    __rmatmul__ = __matmul__    #propiedad conmutativa del producto escalar
+    
+    def __floordiv__(self, otro):
+        """
+        Extracción de componente paralela a otro.
+        
+        >>> v1 = Vector([2, 1, 2])
+        >>> v2 = Vector([0.5, 1, 0.5])
+        >>> v1 // v2
+        Vector([1.0, 2.0, 1.0])
+        """
+            #implementación de la fórmula del readme, al estar elevat al quadrat no cal fer l'arrel quadrada
+        
+        modulo_otro = sum(otro ** 2 for otro in otro)
+        return Vector((self @ otro / modulo_otro) * otro_i for otro_i in otro)
+    
+    __rfloordiv__ = __floordiv__ 
+    
+    def __mod__(self, otro):
+        """
+        Extracción de componente perpendicular a otro.
+        
+        >>> v1 = Vector([2, 1, 2])
+        >>> v2 = Vector([0.5, 1, 0.5])
+        >>> v1 % v2
+        Vector([1.0, -1.0, 1.0])
+        """
+        
+        return self - (self // otro)
+        
+    __rmod__ = __mod__
+    
+
+        
+        
+    
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)    
+        
+    
